@@ -37,7 +37,7 @@ const Right = () => {
     }
 
     const typ = type ? "title" : "author";
-    const url = `http://openlibrary.org/search.json?${typ}=${value}&offset=${
+    const url = `https://openlibrary.org/search.json?${typ}=${value}&offset=${
       c === undefined ? pageNumber : c
     }&limit=${b === undefined ? pageContent : b}`;
     loadCnt++;

@@ -16,7 +16,7 @@ const Left = () => {
     }
     setLoading(true);
     const response = await axios.get(
-      `http://openlibrary.org/subjects/${value}.json?details=true`
+      `https://openlibrary.org/subjects/${value}.json?details=true`
     );
     setSubBooks(null);
     setData(response.data);
@@ -27,7 +27,7 @@ const Left = () => {
       return;
     }
     setLoading(true);
-    const response = await axios.get(`http://openlibrary.org${value}`);
+    const response = await axios.get(`https://openlibrary.org${value}`);
     setData(null);
     setSubBooks(response.data);
     setLoading(false);
@@ -137,7 +137,7 @@ const Left = () => {
                 <Button
                 key={item.key}
                   onClick={() =>
-                    window.open(`http://openlibrary.org${item.key}`)
+                    window.open(`https://openlibrary.org${item.key}`)
                   }
                   block
                 >
