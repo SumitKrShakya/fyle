@@ -1,4 +1,4 @@
-import React, {useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 import {
@@ -9,8 +9,11 @@ import {
   Switch,
   Pagination,
   Tag,
+  Avatar,
 } from "antd";
 import axios from "axios";
+
+const { Meta } = Card;
 
 let loadCnt = 0;
 
@@ -22,6 +25,7 @@ const Right = () => {
   const [pageContent, setPageContent] = useState(10); // page number
   const [val, setVal] = useState("the");
 
+  const test = [1, 2, 3, 4, 5, 6]
   const { Search } = Input;
   const onSearch = async (value, a, b, c) => {
     if (value === "") {
@@ -95,7 +99,31 @@ const Right = () => {
         </ConfigProvider>
       </div>
       <div className="details">
+        {loading && (
+          <>
+            {test.map((item, index) => {
+              return (
+                <Card
+                  style={{
+                    width: 300,
+                    margin: 16,
+                  }}
+                  loading={loading}
+                >
+                  <Meta
+                    avatar={
+                      <Avatar src="https://joesch.moe/api/v1/random?key=1" />
+                    }
+                    title="Card title"
+                    description="This is the description"
+                  />
+                </Card>
+              );
+            })}
+          </>
+        )}
         {data &&
+          !loading &&
           data.docs.map((item) => {
             if (item.author_name !== undefined) {
               const t = item.author_name.length;
@@ -140,7 +168,15 @@ const Right = () => {
                 </p>
               </Card>
             );
-          })}
+          })}{
+          }
+          {
+            !data && !loading && (
+              <h1 style={{margin:"auto ",color:"rgba(0,0,0,0.5)"}}>
+                Search for books by title or author or subjects.<br/> Click on the book to get
+              </h1>
+            )
+          }
       </div>
       <div className="page">
         <ConfigProvider

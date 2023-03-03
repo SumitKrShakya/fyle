@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import Logo from "../fylelogo.svg";
-import { Input, Space, ConfigProvider, Button } from "antd";
+import { Input, Space, ConfigProvider, Button,Skeleton } from "antd";
 import axios from "axios";
 
 const Left = () => {
@@ -9,6 +9,8 @@ const Left = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
   const [subBooks, setSubBooks] = useState(null);
+
+  const test = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
   const onSearch = async (value) => {
     if (value === "") {
@@ -36,7 +38,7 @@ const Left = () => {
   return (
     <StyledDiv>
       <img src={Logo} alt="" />
-      <h2>Trending Subjects</h2>
+      <h2 style={{color:"rgba(0,0,0,0.8)"}}>Trending Subjects</h2>
       <ConfigProvider
         theme={{
           token: {
@@ -73,7 +75,7 @@ const Left = () => {
             height: "67%",
           }}
         >
-          {data &&
+          {data && !loading &&
             data.subjects.map((item) => {
               const t = item.name.length;
               if (t > 30) {
@@ -91,7 +93,7 @@ const Left = () => {
               );
             })}
 
-          {!data && !subBooks && (
+          {!data && !loading && !subBooks && (
             <>
               <Button
                 onClick={() => onSubjectClick(`/subjects/love.json`)}
@@ -125,8 +127,8 @@ const Left = () => {
               </Button>
             </>
           )}
-          {subBooks && <h4>Books</h4>}
-          {subBooks &&
+          {subBooks && !loading && <h4>Books</h4>}
+          {subBooks && !loading &&
             subBooks.works.map((item) => {
               const t = item.title.length;
               if (t > 30) {
@@ -145,6 +147,11 @@ const Left = () => {
                 </Button>
               );
             })}
+            {
+              loading && 
+              test.map((item) => <Skeleton.Button active={true} block />)
+            }
+            
         </Space>
       </ConfigProvider>
     </StyledDiv>
