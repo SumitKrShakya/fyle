@@ -1,22 +1,18 @@
-import React, { useRef, useState } from "react";
+import React, {useState } from "react";
 import styled from "styled-components";
-import { ClockCircleOutlined } from "@ant-design/icons";
 
 import {
   Input,
   Space,
   ConfigProvider,
-  Button,
   Card,
-  Col,
-  Row,
   Switch,
   Pagination,
-  Badge,
   Tag,
 } from "antd";
-// import { Data } from "./Data";
 import axios from "axios";
+
+let loadCnt = 0;
 
 const Right = () => {
   const [data, setData] = useState(null);
@@ -24,48 +20,46 @@ const Right = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [loading, setLoading] = useState(false);
   const [pageContent, setPageContent] = useState(10); // page number
-  const [resultNumber, setResultNumber] = useState(0);
   const [val, setVal] = useState("the");
 
-  console.log(data);
   const { Search } = Input;
-  const onSearch = async (value, a, b,c) => {
-    console.log(value,a,b,c);
+  const onSearch = async (value, a, b, c) => {
+    if (value === "") {
+      return;
+    }
+    setLoading(true);
     setVal(value);
-    // value.replaceAll(' ', '+');
-    if(b!==undefined){
+    if (b !== undefined) {
       setPageContent(b);
     }
-    if(c!==undefined){
+    if (c !== undefined) {
       setPageNumber(c);
     }
 
     const typ = type ? "title" : "author";
-    const url = `http://openlibrary.org/search.json?${typ}=${value}&offset=${c===undefined? pageNumber : c}&limit=${b===undefined? pageContent : b}`;
-    console.log("here", url);
-    setLoading(true);
+    const url = `http://openlibrary.org/search.json?${typ}=${value}&offset=${
+      c === undefined ? pageNumber : c
+    }&limit=${b === undefined ? pageContent : b}`;
+    loadCnt++;
     const response = await axios.get(url);
-    setLoading(false);
-    console.log("here2");
-    console.log("response", response);
+    loadCnt--;
+    setLoading(loadCnt === 0 ? false : true);
+
+    // setLoading(false);
     setData(response.data);
-    // setPageContent(response.data.docs.length)
-    // setResultNumber(response.data.docs.length)
   };
 
   const onChange = async (checked) => {
     setType(checked);
-    console.log(`switch to ${checked}`);
   };
-  const onShowSizeChange = async(current, pageSize) => {
-    console.log(current, pageSize);
-    // await setPageContent(pageSize);
-    // await setPageNumber(current);
-    onSearch(val,"test",pageSize,current);
+  const onShowSizeChange = async (current, pageSize) => {
+    await setPageContent(pageSize);
+    await setPageNumber(current);
+    onSearch(val, "test2", pageSize, current);
   };
-  const onPageChange = async(pageNumber) => {
-    onSearch(val,"test",pageContent,pageNumber);
-  }
+  const onPageChange = async (pageNumber) => {
+    onSearch(val, "test", pageContent, pageNumber);
+  };
 
   return (
     <StyledDiv>
@@ -81,7 +75,7 @@ const Right = () => {
           <Space size={50} direction="horizontal">
             <Search
               loading={loading}
-              placeholder="Seach for subjects here"
+              placeholder={`Search books by ${type ? "Title" : "Author"}`}
               onSearch={onSearch}
               enterButton
               style={{
@@ -103,7 +97,6 @@ const Right = () => {
       <div className="details">
         {data &&
           data.docs.map((item) => {
-            // console.log(item.subject);
             if (item.author_name !== undefined) {
               const t = item.author_name.length;
               if (t > 10) {
@@ -132,14 +125,12 @@ const Right = () => {
                   <span style={{ fontWeight: "600" }}>Author : </span>
                   {item.author_name}
                 </p>
-                {/* <p>
-                  <span style={{ fontWeight: "600" }}>description : </span>
-                </p> */}
                 <p>
                   <span style={{ fontWeight: "600" }}>Languages : </span>
-                  {item.language && item.language.map((item) => {
-                    return <Tag color="default">{item}</Tag>;
-                  })}
+                  {item.language &&
+                    item.language.map((item) => {
+                      return <Tag color="default">{item}</Tag>;
+                    })}
                 </p>
                 <p>
                   <span style={{ fontWeight: "600" }}>
@@ -152,18 +143,25 @@ const Right = () => {
           })}
       </div>
       <div className="page">
-        <Pagination
-          style={{
-            width: 900,
+        <ConfigProvider
+          theme={{
+            token: {
+              colorPrimary: "#ff2e63",
+            },
           }}
-          total={data === null ? 0 : data.numFound}
-          showSizeChanger
-          onChange={onPageChange}
-          onShowSizeChange={onShowSizeChange}
-          showQuickJumper
-
-          showTotal={(total) => `Total ${total} items`}
-        />
+        >
+          <Pagination
+            style={{
+              width: 900,
+            }}
+            total={data === null ? 0 : data.numFound}
+            showSizeChanger
+            onShowSizeChange={onShowSizeChange}
+            onChange={onPageChange}
+            showQuickJumper
+            showTotal={(total) => `Total ${total} items`}
+          />
+        </ConfigProvider>
       </div>
     </StyledDiv>
   );
